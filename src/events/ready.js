@@ -5,6 +5,7 @@ require('dotenv').config()
 module.exports = {
     name: 'ready',
     once: true,
+
     execute(client, commands) {
         //setting up bot's status in Discord
         console.debug('ready!')
