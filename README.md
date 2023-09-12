@@ -51,6 +51,10 @@ never share the .env to anyone
 token=
 ```
 
+# 📈 Analytics
+
+![stats](https://repobeats.axiom.co/api/embed/d0dfc767139bd32afa91e69d2a95e333425dda2f.svg)
+
 # 🤝 Contributors
 
 <a href="https://github.com/pranshu05/elpha2.0/graphs/contributors">
