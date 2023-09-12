@@ -1,14 +1,41 @@
-const { Client, Events, GatewayIntentBits } = require('discord.js')
 require('dotenv').config()
+const Discord = require('discord.js')
+const fs = require('fs')
+const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js')
+const Database = require('./config/Database')
+const db = new Database()
 
-// Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+//connecting MongoDB
+db.connect()
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds
+    ]  
+})
 
-// When the client is ready, run this code (only once)
-// We use 'c' for the event parameter to keep it separate from the already defined 'client'
-client.once(Events.ClientReady, c => {
-	console.log(`Ready! Logged in as ${c.user.tag}`)
-});
+//Command handler
+const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'));
+const commands = []
 
-// Log in to Discord with your client's token
+//deploying commands in Discord's API
+
+client.commands = new Collection()
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`)
+    commands.push(command.data.toJSON())
+	client.commands.set(command.data.name, command)
+}
+
+//Event Handler
+const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'))
+for(const file of eventFiles){
+	const event = require(`./events/${file}`)
+    if (event.once){
+        client.once(event.name, (...args) => event.execute(...args, commands))
+    } else {
+        client.on(event.name, (...args) => event.execute(...args, commands))
+    }
+}
+
+
 client.login(process.env.token)
